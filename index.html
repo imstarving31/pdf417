@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trình Tạo Mã PDF417 - Chuẩn AAMVA Nâng Cao</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bwip-js/3.3.0/bwip-js-min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; gap: 30px; flex-wrap: wrap; }
+        .form-section { flex: 1; min-width: 350px; }
+        .result-section { flex: 1; min-width: 350px; display: flex; flex-direction: column; align-items: center; }
+        h2 { color: #333; margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 10px; width: 100%; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 8px; }
+        label { font-size: 13px; font-weight: bold; margin-bottom: 4px; color: #555; }
+        input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; background: #fff; }
+        input:focus, select:focus { border-color: #007bff; outline: none; box-shadow: 0 0 5px rgba(0,123,255,0.3); }
+        .full-width { grid-column: span 2; }
+        button { background-color: #007bff; color: white; border: none; padding: 12px 20px; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 15px; }
+        button:hover { background-color: #0056b3; }
+        #barcodeCanvas { border: 1px solid #ddd; background: #fff; margin-top: 20px; max-width: 100%; }
+        
+        .raw-data-box { width: 100%; background: #282c34; color: #abb2bf; padding: 15px; border-radius: 4px; font-family: 'Courier New', Courier, monospace; font-size: 13px; margin-top: 20px; white-space: pre-wrap; word-wrap: break-word; overflow-y: auto; max-height: 400px; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Tạo Mã Vạch PDF417 (Chuẩn AAMVA Nâng Cao)</h2>
+    
+    <div class="form-section">
+        <form id="aamvaForm" onsubmit="event.preventDefault(); generateBarcode();">
+            <div class="form-grid">
+                <div class="input-group full-width"><label>DL Number (DAQ):</label><input type="text" id="DAQ" placeholder="Số giấy phép lái xe"></div>
+                <div class="input-group"><label>Last Name (DCS):</label><input type="text" id="DCS" placeholder="Họ"></div>
+                <div class="input-group"><label>First Name (DAC):</label><input type="text" id="DAC" placeholder="Tên"></div>
+                <div class="input-group full-width"><label>Middle Name (DAD):</label><input type="text" id="DAD" placeholder="Tên đệm"></div>
+                <div class="input-group"><label>Name Suffix (DCU):</label><select id="DCU"><option value="NONE">NONE</option><option value="JR">JR (Junior)</option><option value="SR">SR (Senior)</option><option value="1ST">1ST or I (First)</option><option value="2ND">2ND or II (Second)</option><option value="3RD">3RD or III (Third)</option><option value="4TH">4TH or IV (Fourth)</option><option value="5TH">5TH or V (Fifth)</option><option value="6TH">6TH or VI (Sixth)</option></select></div>
+                <div class="input-group full-width"><label>Address (DAG):</label><input type="text" id="DAG" placeholder="Địa chỉ đường"></div>
+                <div class="input-group"><label>City (DAI):</label><input type="text" id="DAI" placeholder="Thành phố"></div>
+                <div class="input-group"><label>State (DAJ):</label><input type="text" id="DAJ" placeholder="Tiểu bang (VD: MI)"></div>
+                <div class="input-group"><label>Zip Code (DAK):</label><input type="text" id="DAK" placeholder="Mã bưu chính"></div>
+                
+                <div class="input-group"><label>Issue Date (DBD):</label><input type="text" id="DBD" placeholder="MMDDYYYY"></div>
+                <div class="input-group"><label>Birth Date (DBB):</label><input type="text" id="DBB" placeholder="MMDDYYYY"></div>
+                <div class="input-group"><label>Expiry Date (DBA):</label><input type="text" id="DBA" placeholder="MMDDYYYY"></div>
+                <div class="input-group"><label>Sex (DBC):</label><input type="text" id="DBC" placeholder="1/2 hoặc M/F"></div>
+                
+                <div class="input-group"><label>Height (DAU):</label><input type="text" id="DAU" placeholder="Chiều cao (VD: 511)"></div>
+                <div class="input-group"><label>Eye Color (DAY):</label><input type="text" id="DAY" placeholder="Màu mắt (VD: BRO)"></div>
+                <div class="input-group"><label>Class (DCA):</label><input type="text" id="DCA" placeholder="Class (VD: O)"></div>
+                <div class="input-group"><label>Restrictions / RES (DCB):</label><input type="text" id="DCB" placeholder="Restrictions (VD: B)"></div>
+                <div class="input-group"><label>Endorsements / END (DCD):</label><input type="text" id="DCD" placeholder="Endorsements (VD: NONE)"></div>
+                
+                <div class="input-group full-width"><label>DD Mã phân biệt (DCG):</label><input type="text" id="DCG" placeholder="Mã phân biệt tài liệu"></div>
+                <div class="input-group full-width"><label>Inventory Control Number (DCK):</label><input type="text" id="DCK" placeholder="Số kiểm soát nội bộ"></div>
+            </div>
+            <button type="submit">Tạo Mã PDF417</button>
+        </form>
+    </div>
+
+    <div class="result-section">
+        <h3>Mã vạch của bạn:</h3>
+        <canvas id="barcodeCanvas"></canvas>
+        <h3 style="margin-top:30px;">Dữ liệu chuỗi AAMVA (Raw String):</h3>
+        <div class="raw-data-box" id="rawDataOutput">Nhấn nút tạo để xem chuỗi...</div>
+    </div>
+</div>
+
+<script>
+    function formatAAMVAText(str) {
+        if (!str) return "";
+        return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toUpperCase().trim();
+    }
+
+    function getTruncation(str) {
+        if (!str) return "N"; 
+        return str.length > 40 ? "T" : "N";
+    }
+
+    function padZero(number, length) {
+        return number.toString().padStart(length, '0');
+    }
+
+    const EXPORT_WIDTH = 1092;
+    const EXPORT_HEIGHT = 252;
+    const EXPORT_MARGIN = 12;
+
+    function generateBarcode() {
+        const val = id => formatAAMVAText(document.getElementById(id) ? document.getElementById(id).value : "");
+        
+        let hasData = false;
+        const inputs = ["DAQ", "DCS", "DAC", "DAD", "DAG", "DAI", "DAJ", "DAK", "DBD", "DBB", "DBA", "DBC", "DAU", "DAY", "DCA", "DCB", "DCD", "DCG", "DCK"];
+        inputs.forEach(id => {
+            if (val(id) !== "") hasData = true;
+        });
+        if (val('DCU') !== "NONE") hasData = true;
+
+        if (!hasData) {
+            alert("Vui lòng nhập ít nhất một trường thông tin!");
+            return;
+        }
+
+        const ddeVal = getTruncation(val('DCS'));
+        const ddfVal = getTruncation(val('DAC'));
+        const ddgVal = getTruncation(val('DAD'));
+
+        const fieldsTemplate = [
+            { id: "DAQ", value: val('DAQ') },
+            { id: "DCS", value: val('DCS') },
+            { id: "DDE", value: ddeVal },    
+            { id: "DAC", value: val('DAC') },
+            { id: "DDF", value: ddfVal },    
+            { id: "DAD", value: val('DAD') },
+            { id: "DDG", value: ddgVal },    
+            { id: "DCU", value: val('DCU') },
+            { id: "DCA", value: val('DCA') },        
+            { id: "DCB", value: val('DCB') },        
+            { id: "DCD", value: val('DCD') },        
+            { id: "DBD", value: val('DBD') },
+            { id: "DBB", value: val('DBB') },
+            { id: "DBA", value: val('DBA') },
+            { id: "DBC", value: val('DBC') },
+            { id: "DAU", value: val('DAU') },
+            { id: "DAY", value: val('DAY') },
+            { id: "DAG", value: val('DAG') },
+            { id: "DAI", value: val('DAI') },
+            { id: "DAJ", value: val('DAJ') },
+            { id: "DAK", value: val('DAK') },
+            { id: "DCF", value: "" },        
+            { id: "DCG", value: val('DCG') },
+            { id: "DCK", value: val('DCK') } 
+        ];
+
+        let subfileData = "DL";
+        fieldsTemplate.forEach(field => {
+            subfileData += `${field.id}${field.value}\n`;
+        });
+
+        const offsetDL = 31; 
+        const lengthDL = subfileData.length;
+        
+        const prefix = "@\n\u001E\r";
+        const headerInfo = "ANSI 636032100101"; 
+        const subfileDesignator = "DL" + padZero(offsetDL, 4) + padZero(lengthDL, 4);
+
+        const finalAAMVAString = prefix + headerInfo + subfileDesignator + subfileData;
+
+        const displayString = "@\n\u001E\n" + headerInfo + subfileDesignator + subfileData.trim();
+        document.getElementById('rawDataOutput').innerText = displayString;
+
+        try {
+            const renderCanvas = document.createElement('canvas');
+            bwipjs.toCanvas(renderCanvas, {
+                bcid: 'pdf417',
+                text: finalAAMVAString, 
+                scale: 3,
+                columns: 14,
+                rows: 22,
+                backgroundcolor: 'FFFFFF',
+                barcolor: '000000',
+                paddingwidth: 8,
+                paddingheight: 8,
+                includetext: false 
+            });
+
+            const barcodeCanvas = document.getElementById('barcodeCanvas');
+            const ctx = barcodeCanvas.getContext('2d');
+            barcodeCanvas.width = EXPORT_WIDTH;
+            barcodeCanvas.height = EXPORT_HEIGHT;
+
+            ctx.imageSmoothingEnabled = false;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, EXPORT_WIDTH, EXPORT_HEIGHT);
+
+            const resizeScale = Math.min(
+                (EXPORT_WIDTH - EXPORT_MARGIN * 2) / renderCanvas.width,
+                (EXPORT_HEIGHT - EXPORT_MARGIN * 2) / renderCanvas.height
+            );
+            const drawWidth = Math.round(renderCanvas.width * resizeScale);
+            const drawHeight = Math.round(renderCanvas.height * resizeScale);
+            const drawX = Math.floor((EXPORT_WIDTH - drawWidth) / 2);
+            const drawY = Math.floor((EXPORT_HEIGHT - drawHeight) / 2);
+
+            ctx.drawImage(renderCanvas, drawX, drawY, drawWidth, drawHeight);
+        } catch (e) {
+            console.error("Lỗi vẽ barcode:", e);
+        }
+    }
+</script>
+
+</body>
+</html>
