@@ -46,6 +46,7 @@
                 <div class="input-group"><label>Birth Date (DBB):</label><input type="text" id="DBB" placeholder="MMDDYYYY"></div>
                 <div class="input-group"><label>Expiry Date (DBA):</label><input type="text" id="DBA" placeholder="MMDDYYYY"></div>
                 <div class="input-group"><label>Sex (DBC):</label><input type="text" id="DBC" placeholder="1/2 hoặc M/F"></div>
+                <div class="input-group"><label>Donor (DDK):</label><select id="DDK"><option value="">No</option><option value="1">Yes</option></select></div>
                 
                 <div class="input-group"><label>Height (DAU):</label><input type="text" id="DAU" placeholder="Chiều cao (VD: 511)"></div>
                 <div class="input-group"><label>Eye Color (DAY):</label><input type="text" id="DAY" placeholder="Màu mắt (VD: BRO)"></div>
@@ -91,7 +92,7 @@
         const val = id => formatAAMVAText(document.getElementById(id) ? document.getElementById(id).value : "");
         
         let hasData = false;
-        const inputs = ["DAQ", "DCS", "DAC", "DAD", "DAG", "DAI", "DAJ", "DAK", "DBD", "DBB", "DBA", "DBC", "DAU", "DAY", "DCA", "DCB", "DCD", "DCG", "DCK"];
+        const inputs = ["DAQ", "DCS", "DAC", "DAD", "DAG", "DAI", "DAJ", "DAK", "DBD", "DBB", "DBA", "DBC", "DDK", "DAU", "DAY", "DCA", "DCB", "DCD", "DCG", "DCK"];
         inputs.forEach(id => {
             if (val(id) !== "") hasData = true;
         });
@@ -122,6 +123,7 @@
             { id: "DBB", value: val('DBB') },
             { id: "DBA", value: val('DBA') },
             { id: "DBC", value: val('DBC') },
+            { id: "DDK", value: val('DDK') },
             { id: "DAU", value: val('DAU') },
             { id: "DAY", value: val('DAY') },
             { id: "DAG", value: val('DAG') },
