@@ -36,7 +36,7 @@
                 <div class="input-group"><label>Last Name (DCS):</label><input type="text" id="DCS" placeholder="Họ"></div>
                 <div class="input-group"><label>First Name (DAC):</label><input type="text" id="DAC" placeholder="Tên"></div>
                 <div class="input-group full-width"><label>Middle Name (DAD):</label><input type="text" id="DAD" placeholder="Tên đệm"></div>
-                <div class="input-group"><label>Name Suffix (DCU):</label><select id="DCU"><option value="NONE">NONE</option><option value="JR">JR (Junior)</option><option value="SR">SR (Senior)</option><option value="1ST">1ST or I (First)</option><option value="2ND">2ND or II (Second)</option><option value="3RD">3RD or III (Third)</option><option value="4TH">4TH or IV (Fourth)</option><option value="5TH">5TH or V (Fifth)</option><option value="6TH">6TH or VI (Sixth)</option></select></div>
+                <div class="input-group"><label>Name Suffix (DCU):</label><select id="DCU"><option value=""></option><option value="JR">JR (Junior)</option><option value="SR">SR (Senior)</option><option value="1ST">1ST or I (First)</option><option value="2ND">2ND or II (Second)</option><option value="3RD">3RD or III (Third)</option><option value="4TH">4TH or IV (Fourth)</option><option value="5TH">5TH or V (Fifth)</option><option value="6TH">6TH or VI (Sixth)</option></select></div>
                 <div class="input-group full-width"><label>Address (DAG):</label><input type="text" id="DAG" placeholder="Địa chỉ đường"></div>
                 <div class="input-group"><label>City (DAI):</label><input type="text" id="DAI" placeholder="Thành phố"></div>
                 <div class="input-group"><label>State (DAJ):</label><input type="text" id="DAJ" placeholder="Tiểu bang (VD: MI)"></div>
@@ -46,7 +46,7 @@
                 <div class="input-group"><label>Birth Date (DBB):</label><input type="text" id="DBB" placeholder="MMDDYYYY"></div>
                 <div class="input-group"><label>Expiry Date (DBA):</label><input type="text" id="DBA" placeholder="MMDDYYYY"></div>
                 <div class="input-group"><label>Sex (DBC):</label><input type="text" id="DBC" placeholder="1/2 hoặc M/F"></div>
-                <div class="input-group"><label>Donor (DDK):</label><select id="DDK"><option value="">No</option><option value="1">Yes</option></select></div>
+                <div class="input-group"><label>Donor (DDK):</label><select id="DDK"><option value=""></option><option value="1">Yes</option></select></div>
                 
                 <div class="input-group"><label>Height (DAU):</label><input type="text" id="DAU" placeholder="Chiều cao (VD: 511)"></div>
                 <div class="input-group"><label>Eye Color (DAY):</label><input type="text" id="DAY" placeholder="Màu mắt (VD: BRO)"></div>
@@ -96,7 +96,7 @@
         inputs.forEach(id => {
             if (val(id) !== "") hasData = true;
         });
-        if (val('DCU') !== "NONE") hasData = true;
+        if (val('DCU') !== "") hasData = true;
 
         if (!hasData) {
             alert("Vui lòng nhập ít nhất một trường thông tin!");
@@ -115,7 +115,7 @@
             { id: "DDF", value: ddfVal },    
             { id: "DAD", value: val('DAD') },
             { id: "DDG", value: ddgVal },    
-            { id: "DCU", value: val('DCU') },
+            { id: "DCU", value: val('DCU'), optional: true },
             { id: "DCA", value: val('DCA') },        
             { id: "DCB", value: val('DCB') },        
             { id: "DCD", value: val('DCD') },        
@@ -123,7 +123,7 @@
             { id: "DBB", value: val('DBB') },
             { id: "DBA", value: val('DBA') },
             { id: "DBC", value: val('DBC') },
-            { id: "DDK", value: val('DDK') },
+            { id: "DDK", value: val('DDK'), optional: true },
             { id: "DAU", value: val('DAU') },
             { id: "DAY", value: val('DAY') },
             { id: "DAG", value: val('DAG') },
@@ -137,6 +137,7 @@
 
         let subfileData = "DL";
         fieldsTemplate.forEach(field => {
+            if (field.optional && field.value === "") return;
             subfileData += `${field.id}${field.value}\n`;
         });
 
